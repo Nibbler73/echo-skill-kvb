@@ -14,6 +14,7 @@ class UserAttributesEntity
 
     private $preferredLines         = array(1, 7);
 
+    private $admin                  = true;
 
     /**
      * @return string
@@ -77,5 +78,21 @@ class UserAttributesEntity
     public function setPreferredLines($preferredLines)
     {
         $this->preferredLines = $preferredLines;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isAdmin()
+    {
+        return $this->admin;
+    }
+
+    /**
+     * @param boolean $admin
+     */
+    public function setAdmin($admin)
+    {
+        $this->admin = $admin;
     }
 }

@@ -10,6 +10,7 @@ class ConfigureHaltestelleIntent extends IntentBase
 {
     private $usersStationName;
     private $lookupStationName;
+    private $lookupStationId;
 
     /*
      * Response Messages Names
@@ -32,8 +33,9 @@ class ConfigureHaltestelleIntent extends IntentBase
         $slots = $this->getIntentSlots();
         $slotHaltestelle = $slots['Haltestelle'];
         if(is_array($slotHaltestelle) && count($slotHaltestelle) > 0) {
-            $this->usersStationName = $slotHaltestelle['value'];
-            $this->lookupStationName = "Aachener Str./Gürtel, Köln-Braunsfeld";
+            $this->usersStationName     = $slotHaltestelle['value'];
+            $this->lookupStationId      = $slotHaltestelle['id'];
+            $this->lookupStationName    = "Aachener Str./Gürtel, Köln-Braunsfeld";
             return $slotHaltestelle['name'] === 'Haltestelle' && strlen($slotHaltestelle['value']) > 0;
         }
         return false;
@@ -48,6 +50,12 @@ class ConfigureHaltestelleIntent extends IntentBase
         // Claim everything is ok
         $responseTemplate = $this->responseMessages[self::CONFIGURATION_STATION_SET];
         $responseText = str_replace('{Haltestelle}', $stationName, $responseTemplate);
+        if($user->isAdmin() && strlen($this->usersStationName) > 0) {
+            $responseText .= " Gehörter Name der Haltestelle: ".$this->usersStationName;
+        }
+        if($user->isAdmin() && strlen($this->lookupStationId) > 0) {
+            $responseText .= " Id der Haltestelle: ".$this->lookupStationId;
+        }
         $this->response->setSsmlResponseText($responseText);
     }
 }
