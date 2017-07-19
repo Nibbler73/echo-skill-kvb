@@ -56,7 +56,7 @@ class KvbDocumentParser
         ];
         $html = @file_get_contents($url, $pFlags=false, stream_context_create($opts));
         if(strlen($html) < 1) {
-            throw new BadMethodCallException(__METHOD__.": cannot fetch data from URL");
+            throw new BadMethodCallException(__METHOD__.": cannot fetch data from URL", 41001);
         }
 
         // a new dom object

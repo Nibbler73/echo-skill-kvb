@@ -19,12 +19,12 @@ class AlexaRequest
                 $testString = new TestIntentListDepartures();
                 $entityBody = $testString->requestString;
             } else {
-                throw new BadMethodCallException(__METHOD__.": no request data was sent");
+                throw new BadMethodCallException(__METHOD__.": no request data was sent", 11000);
             }
         }
         $this->entityBody = json_decode( $entityBody, $assoc = true );
         if(! is_array($this->entityBody)) {
-            throw new BadMethodCallException(__METHOD__.": cannot read amazon echo request");
+            throw new BadMethodCallException(__METHOD__.": cannot read amazon echo request", 11000);
         }
     }
 
@@ -32,7 +32,7 @@ class AlexaRequest
     {
         $userId = $this->entityBody['session']['user']['userId'];
         if(!is_string($userId) || strlen($userId) < 1) {
-            throw new BadMethodCallException(__METHOD__.": no userId");
+            throw new BadMethodCallException(__METHOD__.": no userId", 11001);
         }
         return $userId;
     }
@@ -41,7 +41,7 @@ class AlexaRequest
     {
         $intentName = $this->entityBody['request']['intent']['name'];
         if(!is_string($intentName) || strlen($intentName) < 1) {
-            throw new BadMethodCallException(__METHOD__.": no intent");
+            throw new BadMethodCallException(__METHOD__.": no intent", 11002);
         }
         // Sanitize Amazon-Internal names
         $intentName = str_replace('.', '_', $intentName);
@@ -51,7 +51,7 @@ class AlexaRequest
     {
         $intentSlotsList = $this->entityBody['request']['intent']['slots'];
         if(!is_array($intentSlotsList) || count($intentSlotsList) < 1) {
-            throw new BadMethodCallException(__METHOD__.": no intent slots");
+            throw new BadMethodCallException(__METHOD__.": no intent slots", 11003);
         }
         return $intentSlotsList;
     }
