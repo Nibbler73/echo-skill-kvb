@@ -22,9 +22,13 @@ $db = new DatabaseController($request);
 $intentName = $request->getIntent();
 
 // Verify we have that Intent
-$intent = new $intentName($db, $request);
-if(! $intent instanceof IntentBase) {
-    throw new BadMethodCallException("Unknown Intent: ".$intentName);
+if(class_exists($intentName)) {
+    $intent = new $intentName($db, $request);
+    if (!$intent instanceof IntentBase) {
+        throw new BadMethodCallException("Unknown Intent: " . $intentName, 99001);
+    }
+} else {
+    throw new BadMethodCallException("Unknown Intent: " . $intentName, 99001);
 }
 
 // Trigger Intent and let it do the work
