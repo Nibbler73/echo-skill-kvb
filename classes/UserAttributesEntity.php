@@ -5,16 +5,42 @@
  */
 class UserAttributesEntity
 {
-    private $userId                 = "amzn1.ask.account.AHKTH3ERBVTFPZAI7J4PKEG2L2GTROYNSBBUIVSXLJO5ENDUUC3UNEOI63BQNGBVX44V6EJ2YZPDHQM23J4YAQFXJUWON3SFTANGYCBXVHZZTWV2XBOUPKLUGH6PCLYNTBRQMT7OE2AXUQ7U7SSHXM2HGS7ELELUYHO7AE7SZ3YXWH4SFWCRJA5ULNHPUDC7PYWWXFUU7VI6KPQ";
+    private $userId;
 
-    // http://www.kvb-koeln.de/german/hst/overview/178/
-    private $defaultStationId       = 178;
+    private $defaultStationId;
 
-    private $defaultStationName     = "Aachener Str./Gürtel, Köln-Braunsfeld";
+    private $defaultStationName;
 
-    private $preferredLines         = array(1, 7);
+    private $preferredLines;
 
-    private $admin                  = true;
+    private $lastContact;
+
+    private $admin                  = false;
+
+    public function __construct(string $userDataAsJson=false)
+    {
+        if(is_string($userDataAsJson) && strlen($userDataAsJson) > 0 ) {
+            $userData = json_decode($userDataAsJson, $pAssoc=true);
+            if(is_array($userData)) {
+                foreach (array_keys(get_class_vars(__CLASS__)) as $attribute) {
+                    if(array_key_exists($attribute, $userData)) {
+                        $this->$attribute = $userData[$attribute];
+                    }
+                }
+            }
+        }
+        // Update last contact
+        $this->setLastContact();
+    }
+
+    public function __toString()
+    {
+        $attributes = array();
+        foreach (array_keys(get_class_vars(__CLASS__)) as $attribute) {
+            $attributes[$attribute] = $this->$attribute;
+        }
+        return json_encode($attributes, JSON_PRETTY_PRINT);
+    }
 
     /**
      * @return string
@@ -27,7 +53,7 @@ class UserAttributesEntity
     /**
      * @param string $userId
      */
-    public function setUserId($userId)
+    public function setUserId(string $userId)
     {
         $this->userId = $userId;
     }
@@ -43,7 +69,7 @@ class UserAttributesEntity
     /**
      * @param string $defaultStationName
      */
-    public function setDefaultStationName($defaultStationName)
+    public function setDefaultStationName(string $defaultStationName)
     {
         $this->defaultStationName = $defaultStationName;
     }
@@ -59,7 +85,7 @@ class UserAttributesEntity
     /**
      * @param int $defaultStationId
      */
-    public function setDefaultStationId($defaultStationId)
+    public function setDefaultStationId(int $defaultStationId)
     {
         $this->defaultStationId = $defaultStationId;
     }
@@ -91,8 +117,27 @@ class UserAttributesEntity
     /**
      * @param boolean $admin
      */
-    public function setAdmin($admin)
+    public function setAdmin(bool $admin)
     {
         $this->admin = $admin;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastContact()
+    {
+        return $this->lastContact;
+    }
+
+    /**
+     * @param mixed $lastContact
+     */
+    public function setLastContact(int $lastContact=null)
+    {
+        if(is_null($lastContact)) {
+            $lastContact = time();
+        }
+        $this->lastContact = $lastContact;
     }
 }
