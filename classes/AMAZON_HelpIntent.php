@@ -17,7 +17,7 @@ class AMAZON_HelpIntent extends IntentBase
     public function executeIntent()
     {
         // TODO: Implement executeIntent() method.
-        $user = new UserAttributesEntity();
+        $user = $this->getUser();
         $defaultStation = $user->getDefaultStationName();
 
 		$helpText = "Du kannst mich fragen, wann die Bahnen an Deiner Haltestelle ankommen."

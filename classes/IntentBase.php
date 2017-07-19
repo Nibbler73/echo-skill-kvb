@@ -12,7 +12,7 @@ abstract class IntentBase
     /* @var DatabaseController */
     protected $db;
 
-    public function __construct($db, $request)
+    public function __construct(DatabaseController $db, AlexaRequest $request)
     {
         if($db instanceof DatabaseController) {
             $this->db = $db;
@@ -29,6 +29,10 @@ abstract class IntentBase
     public function getIntentSlots()
     {
         return $this->request->getIntentSlots();
+    }
+
+    public function getUser() {
+        return $this->db->getUserAttributes();
     }
 
     /*

@@ -10,7 +10,9 @@ class DatabaseController
 
     private $dbConnection;
 
-    public function __construct($request)
+    const tableName = "echo_skill_vrs__user";
+
+    public function __construct(AlexaRequest $request)
     {
         if($request instanceof AlexaRequest) {
             $this->request = $request;
@@ -31,6 +33,31 @@ class DatabaseController
         $this->_logRequest();
     }
 
+    public function getUserAttributes()
+    {
+        $userId = $this->request->getUserId();
+        $userJson = $this->_loadUserJson($userId);
+        if(strlen($userJson) > 0 && is_array(json_decode($userJson, $pAssoc=true))) {
+            $user = new UserAttributesEntity($userJson);
+        } else {
+            // Generate a default User
+            $user = new UserAttributesEntity();
+            $user->setUserId($userId);
+        }
+        $this->_saveUserJson($user);
+        return $user;
+        // return new UserAttributesEntity($userJson);
+    }
+    public function setUserAttributes(UserAttributesEntity $user)
+    {
+        $this->_saveUserJson($user);
+    }
+
+    /*
+     * Helper Methods
+     */
+
+    // Dump request to Log Database
     private function _logRequest() {
         $entityBody = $this->request->getEntityBody();
         $entityBody = json_encode ( $entityBody, JSON_PRETTY_PRINT );
@@ -39,13 +66,34 @@ class DatabaseController
         mysqli_query($this->dbConnection, $sql);
     }
 
+    // Load Data from Query to Array
+    private function _loadSqlToArray(string $sql) {
+        $result = mysqli_query($this->dbConnection, $sql, MYSQLI_USE_RESULT);
 
-    public function getUserAttributes()
-    {
-        // TODO: load entry from database by userId passed from Echo
-        return new UserAttributesEntity();
+        $resultSet = array();
+        while($row = $result->fetch_assoc()) {
+            $resultSet[] = $row;
+        }
+
+        return $resultSet;
     }
-    public function setUserAttributes()
-    {
+
+    // Load User-JSON from Database
+    private function _loadUserJson(string $userId) {
+        $sql = "SELECT userAttributes FROM ".self::tableName." WHERE id = '".mysqli_real_escape_string($this->dbConnection, $userId)."'";
+        $r = $this->_loadSqlToArray($sql);
+        if(count($r) > 0 && is_array($r[0])) {
+            return $r[0]['userAttributes'];
+        } else {
+            return false;
+        }
     }
+    // Write User-JSON to Database
+    private function _saveUserJson(UserAttributesEntity $user) {
+        $userId = $user->getUserId();
+        $sql = "REPLACE INTO ".self::tableName."(id, userAttributes) VALUES ('".mysqli_real_escape_string($this->dbConnection, $userId)."', '".mysqli_real_escape_string($this->dbConnection, $user)."')";
+        mysqli_query($this->dbConnection, $sql);
+    }
+
+
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ *
  */
 class ListDeparturesIntent extends IntentBase
 {
@@ -21,13 +21,14 @@ class ListDeparturesIntent extends IntentBase
         // https://www.vrsinfo.de/abfahrtsmonitor/anzeige/vrs_info/Departuremonitor/show/vrs_info-showid/7cd583ae1096addbd6ae70970eef54a1.html?L=0&cHash=caa0a0555485c7bf015af4cd0d5ec2b5
         // VRS Ajax Handler
         // https://www.vrsinfo.de/index.php?eID=tx_vrsinfo_ass2_departuremonitor&i=7cd583ae1096addbd6ae70970eef54a1
-        // $kvb->loadHtmlData("https://skill-kvb.amazon-echo.husic.net/178.html");
+        // KVB Handler
+        // http://www.kvb-koeln.de/german/hst/overview/178/
         $kvb->loadHtmlData("http://www.kvb-koeln.de/german/hst/overview/178/");
 
         // Send Feedback to Echo
         $this->response->setSsmlResponseText($this->messagePrefix . $kvb->getDepartureText());
         if(strlen($this->messagePrefix) === 0) {
-        	$user = new UserAttributesEntity();
+        	$user = $this->getUser();
         	$this->response->setTextResponseCard(
         		"Haltestelle: " . $user->getDefaultStationName() . "\n"
         	.	$kvb->getDepartureCard()
@@ -39,7 +40,7 @@ class ListDeparturesIntent extends IntentBase
     /**
      * @param string $messagePrefix
      */
-    public function setMessagePrefix($messagePrefix)
+    public function setMessagePrefix(string $messagePrefix)
     {
         $this->messagePrefix = $messagePrefix;
     }
